@@ -1,0 +1,4 @@
+contentbot_env/
+venv/
+__pycache__/
+.env
