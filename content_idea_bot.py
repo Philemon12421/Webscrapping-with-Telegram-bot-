@@ -37,8 +37,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 # ============================================================
 
 # --- Telegram ---
-TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"  # Get from @BotFather
-ADMIN_CHAT_ID = "YOUR_CHAT_ID_HERE"  # Your Telegram user ID
+TELEGRAM_BOT_TOKEN = "zYoDx1-tI_J05gtheEJk"  # Get from @BotFather
+ADMIN_CHAT_ID = "503"  # Your Telegram user ID
 
 # --- Email (Gmail SMTP) ---
 EMAIL_ENABLED = False
@@ -543,7 +543,7 @@ def classify_angle(text):
 # DELIVERY FUNCTIONS
 # ============================================================
 
-async def send_to_telegram(update_or_chat_id, filepath, filename, caption="Here's your content ideas Excel file 📊"):
+async def send_to_telegram(update_or_chat_id, filepath, filename, caption="Here's your content ideas Excel file"):
     """Send Excel file via Telegram."""
     chat_id = update_or_chat_id if isinstance(update_or_chat_id, int) else update_or_chat_id.effective_chat.id
     
@@ -602,7 +602,7 @@ def send_whatsapp(filepath, filename):
         # Twilio needs the file hosted somewhere accessible
         # Simple approach: send a text message with the report summary
         message = client.messages.create(
-            body=f"📊 Content Ideas Report ({datetime.now().strftime('%Y-%m-%d')}) has been generated and sent to your email/Telegram. Check those platforms for the full Excel file.",
+            body=f"Content Ideas Report ({datetime.now().strftime('%Y-%m-%d')}) has been generated and sent to your email/Telegram. Check those platforms for the full Excel file.",
             from_=TWILIO_WHATSAPP_NUMBER,
             to=WHATSAPP_RECEIVER
         )
@@ -720,7 +720,7 @@ async def generate_and_deliver_daily_report():
     # Send to Telegram admin
     try:
         await send_to_telegram(ADMIN_CHAT_ID, filepath, filename, 
-                               f"📊 Daily Content Ideas Report — {datetime.now().strftime('%Y-%m-%d')}")
+                               f"Daily Content Ideas Report — {datetime.now().strftime('%Y-%m-%d')}")
         logger.info("Daily report sent via Telegram")
     except Exception as e:
         logger.error(f"Failed to send daily report via Telegram: {e}")
@@ -748,7 +748,7 @@ async def generate_and_deliver_weekly_report():
     
     if df.empty:
         await send_to_telegram(ADMIN_CHAT_ID, None, None, 
-                               "📊 Weekly Report: No data collected this week. Add topics with /addtopics")
+                               "Weekly Report: No data collected this week. Add topics with /addtopics")
         return
     
     # Group by platform and topic
@@ -762,7 +762,7 @@ async def generate_and_deliver_weekly_report():
     filepath, filename = generate_excel(all_results)
     
     await send_to_telegram(ADMIN_CHAT_ID, filepath, filename,
-                           f"📊 WEEKLY Content Ideas Report — {datetime.now().strftime('%Y-%m-%d')}\n"
+                           f"WEEKLY Content Ideas Report — {datetime.now().strftime('%Y-%m-%d')}\n"
                            f"Total ideas collected this week: {len(df)}\n"
                            f"Platforms: {', '.join(df['platform'].unique())}")
     
@@ -782,40 +782,38 @@ async def generate_and_deliver_weekly_report():
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send a welcome message."""
     await update.message.reply_text(
-        "🚀 *Content Idea Scraper Bot*\n\n"
+        "Content Idea Scraper Bot\n\n"
         "I scrape Reddit, Twitter, Medium, YouTube, Quora, Amazon Reviews, and Google News "
         "for content ideas based on your topics.\n\n"
-        "*Commands:*\n"
-        "/addtopics `topic1, topic2, topic3` — Set your topics\n"
+        "Commands:\n"
+        "/addtopics topic1, topic2, topic3 — Set your topics\n"
         "/mytopics — See your current topics\n"
-        "/removetopic `topic` — Remove a topic\n"
+        "/removetopic topic — Remove a topic\n"
         "/scrape — Run a scrape right now\n"
         "/report — Generate and get your Excel report\n"
         "/platforms — See all platforms I scrape\n"
         "/schedule — See the schedule\n"
         "/help — Full help\n\n"
-        "_Built for content creators, bloggers, and marketers._",
-        parse_mode="Markdown"
+        "Built for content creators, bloggers, and marketers."
     )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send help."""
     await update.message.reply_text(
-        "*How to use this bot:*\n\n"
+        "How to use this bot:\n\n"
         "1. Set your topics with /addtopics\n"
         "2. Run /scrape to collect fresh ideas\n"
         "3. Run /report to get your Excel file\n"
         "4. Or just wait — daily reports auto-deliver!\n\n"
-        "*Delivery Channels:*\n"
-        "• Telegram (this bot) ✅\n"
-        "• Email 📧 (if configured)\n"
-        "• WhatsApp 💬 (if configured)\n\n"
-        "*Tips:*\n"
-        "• More specific topics = better results\n"
-        "• Try: \"digital marketing tips\", \"vegan recipes\", \"Python tutorials\"\n"
-        "• Results are saved daily and compiled weekly",
-        parse_mode="Markdown"
+        "Delivery Channels:\n"
+        "- Telegram (this bot)\n"
+        "- Email (if configured)\n"
+        "- WhatsApp (if configured)\n\n"
+        "Tips:\n"
+        "- More specific topics = better results\n"
+        '- Try: "digital marketing tips", "vegan recipes", "Python tutorials"\n'
+        "- Results are saved daily and compiled weekly"
     )
 
 
@@ -826,8 +824,7 @@ async def add_topics(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not text:
         await update.message.reply_text(
             "Please provide topics separated by commas.\n\n"
-            "Example: `/addtopics digital marketing, Python programming, vegan recipes`",
-            parse_mode="Markdown"
+            "Example: /addtopics digital marketing, Python programming, vegan recipes"
         )
         return
     
@@ -851,10 +848,9 @@ async def add_topics(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn.close()
     
     await update.message.reply_text(
-        f"✅ Added {added} topic(s):\n"
+        f"Added {added} topic(s):\n"
         f"{', '.join(topics)}\n\n"
-        f"Run `/scrape` to collect ideas now, or wait for the daily report!",
-        parse_mode="Markdown"
+        f"Run /scrape to collect ideas now, or wait for the daily report!"
     )
 
 
@@ -870,16 +866,14 @@ async def my_topics(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not rows:
         await update.message.reply_text(
             "You haven't set any topics yet.\n"
-            "Use `/addtopics topic1, topic2, topic3` to get started!",
-            parse_mode="Markdown"
+            "Use /addtopics topic1, topic2, topic3 to get started!"
         )
         return
     
     topics = [row[0] for row in rows]
     await update.message.reply_text(
-        f"📋 *Your Topics:*\n{', '.join(topics)}\n\n"
-        f"Total: {len(topics)} topics",
-        parse_mode="Markdown"
+        f"Your Topics:\n{', '.join(topics)}\n\n"
+        f"Total: {len(topics)} topics"
     )
 
 
@@ -889,9 +883,8 @@ async def remove_topic(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not text:
         await update.message.reply_text(
-            "Usage: `/removetopic topic_name`\n"
-            "See your topics with /mytopics",
-            parse_mode="Markdown"
+            "Usage: /removetopic topic_name\n"
+            "See your topics with /mytopics"
         )
         return
     
@@ -905,14 +898,14 @@ async def remove_topic(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn.close()
     
     if removed:
-        await update.message.reply_text(f"✅ Removed '{text}' from your topics.")
+        await update.message.reply_text(f"Removed '{text}' from your topics.")
     else:
-        await update.message.reply_text(f"❌ Topic '{text}' not found. Use /mytopics to see your topics.")
+        await update.message.reply_text(f"Topic '{text}' not found. Use /mytopics to see your topics.")
 
 
 async def scrape_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Run scrape immediately."""
-    await update.message.reply_text("🔍 Starting scrape across all platforms... This may take a minute.")
+    await update.message.reply_text("Starting scrape across all platforms... This may take a minute.")
     
     chat_id = update.effective_chat.id
     all_results = await run_all_scrapes(chat_id=chat_id, return_results=True)
@@ -921,17 +914,16 @@ async def scrape_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     platforms_found = set(r["platform"] for r in all_results)
     
     await update.message.reply_text(
-        f"✅ Scrape complete!\n"
-        f"• Found {total} ideas across {len(platforms_found)} platforms\n"
-        f"• Platforms: {', '.join(sorted(platforms_found))}\n\n"
-        f"Run `/report` to generate your Excel file!",
-        parse_mode="Markdown"
+        f"Scrape complete!\n"
+        f"- Found {total} ideas across {len(platforms_found)} platforms\n"
+        f"- Platforms: {', '.join(sorted(platforms_found))}\n\n"
+        f"Run /report to generate your Excel file!"
     )
 
 
 async def generate_report(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Generate and send Excel report."""
-    msg = await update.message.reply_text("📊 Generating your Excel report...")
+    msg = await update.message.reply_text("Generating your Excel report...")
     
     # Get today's results from DB
     chat_id = update.effective_chat.id
@@ -957,7 +949,7 @@ async def generate_report(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.close()
     
     if df.empty:
-        await msg.edit_text("No data yet. Run `/scrape` first to collect ideas!", parse_mode="Markdown")
+        await msg.edit_text("No data yet. Run /scrape first to collect ideas!")
         return
     
     # Convert to list of dicts
@@ -980,43 +972,41 @@ async def generate_report(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await send_to_telegram(
         chat_id, filepath, filename,
-        f"📊 *Content Ideas Report — {today}*\n"
-        f"• {len(df)} ideas from {platform_count} platforms\n"
-        f"• {topic_count} topics\n\n"
-        f"_Daily reports are also sent automatically!_",
+        f"Content Ideas Report — {today}\n"
+        f"- {len(df)} ideas from {platform_count} platforms\n"
+        f"- {topic_count} topics\n\n"
+        f"Daily reports are also sent automatically!"
     )
     
-    await msg.edit_text("✅ Excel report sent above! 📎")
+    await msg.edit_text("Excel report sent above!")
 
 
 async def show_platforms(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Show available platforms."""
     await update.message.reply_text(
-        "*🌐 Platforms I Scrape:*\n\n"
-        "1. **Reddit** — Top posts by topic\n"
-        "2. **Twitter/X** — Trending tweets\n"
-        "3. **Medium** — Articles by tag\n"
-        "4. **YouTube** — Top videos\n"
-        "5. **Quora** — Questions people ask\n"
-        "6. **Amazon Reviews** — Pain points & needs\n"
-        "7. **Google News** — Trending news\n\n"
-        "_Each platform gives you a different angle for content ideas!_",
-        parse_mode="Markdown"
+        "Platforms I Scrape:\n\n"
+        "1. Reddit — Top posts by topic\n"
+        "2. Twitter/X — Trending tweets\n"
+        "3. Medium — Articles by tag\n"
+        "4. YouTube — Top videos\n"
+        "5. Quora — Questions people ask\n"
+        "6. Amazon Reviews — Pain points & needs\n"
+        "7. Google News — Trending news\n\n"
+        "Each platform gives you a different angle for content ideas!"
     )
 
 
 async def show_schedule(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Show the scraping schedule."""
     await update.message.reply_text(
-        "*⏰ Schedule:*\n\n"
-        "• **Daily Scrape:** Runs every day at 06:00 AM UTC\n"
-        "• **Daily Report:** Delivered right after scraping\n"
-        "  → Telegram ✅\n"
-        f"  → Email {'✅' if EMAIL_ENABLED else '❌ (not configured)'}\n"
-        f"  → WhatsApp {'✅' if WHATSAPP_ENABLED else '❌ (not configured)'}\n"
-        "• **Weekly Report:** Every Sunday at 10:00 AM UTC\n\n"
-        "You can also trigger manually with /scrape and /report",
-        parse_mode="Markdown"
+        "Schedule:\n\n"
+        "- Daily Scrape: Runs every day at 06:00 AM UTC\n"
+        "- Daily Report: Delivered right after scraping\n"
+        "  -> Telegram\n"
+        f"  -> Email {'YES' if EMAIL_ENABLED else 'NO (not configured)'}\n"
+        f"  -> WhatsApp {'YES' if WHATSAPP_ENABLED else 'NO (not configured)'}\n"
+        "- Weekly Report: Every Sunday at 10:00 AM UTC\n\n"
+        "You can also trigger manually with /scrape and /report"
     )
 
 
@@ -1029,10 +1019,47 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # MAIN
 # ============================================================
 
+# Initialize scheduler (module-level, no start() yet — that happens in post_init)
+scheduler = AsyncIOScheduler()
+
+
+async def post_init(application: Application):
+    """Start the scheduler after the application is running (event loop exists)."""
+    # Daily at 06:00 UTC
+    scheduler.add_job(
+        generate_and_deliver_daily_report,
+        trigger="cron",
+        hour=6,
+        minute=0,
+        timezone="UTC",
+        id="daily_report",
+        replace_existing=True
+    )
+
+    # Weekly on Sunday at 10:00 UTC
+    scheduler.add_job(
+        generate_and_deliver_weekly_report,
+        trigger="cron",
+        day_of_week="sun",
+        hour=10,
+        minute=0,
+        timezone="UTC",
+        id="weekly_report",
+        replace_existing=True
+    )
+
+    scheduler.start()
+    logger.info("Scheduler started — daily report @ 06:00 UTC, weekly report @ Sun 10:00 UTC")
+
+
 def main():
     """Start the bot."""
-    # Create application
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    application = (
+        Application.builder()
+        .token(TELEGRAM_BOT_TOKEN)
+        .post_init(post_init)
+        .build()
+    )
     
     # Register handlers
     application.add_handler(CommandHandler("start", start))
@@ -1046,37 +1073,9 @@ def main():
     application.add_handler(CommandHandler("schedule", show_schedule))
     application.add_error_handler(error_handler)
     
-    # Set up scheduler for daily/weekly reports
-    scheduler = AsyncIOScheduler()
+    logger.info("Bot starting... Press Ctrl+C to stop.")
     
-    # Daily at 06:00 UTC
-    scheduler.add_job(
-        generate_and_deliver_daily_report,
-        trigger="cron",
-        hour=6,
-        minute=0,
-        timezone="UTC",
-        id="daily_report",
-        replace_existing=True
-    )
-    
-    # Weekly on Sunday at 10:00 UTC
-    scheduler.add_job(
-        generate_and_deliver_weekly_report,
-        trigger="cron",
-        day_of_week="sun",
-        hour=10,
-        minute=0,
-        timezone="UTC",
-        id="weekly_report",
-        replace_existing=True
-    )
-    
-    scheduler.start()
-    
-    logger.info("Bot started! Press Ctrl+C to stop.")
-    
-    # Run the bot
+    # Run the bot — this starts the event loop internally
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
